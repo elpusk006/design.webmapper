@@ -4,7 +4,11 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // 'base' is '/' for user sites (username.github.io)
-  // If this was a project site (username.github.io/repo), it would be '/repo/'
+  // For https://elpusk006.github.io, base is '/'
+  // If the repository name is NOT elpusk006.github.io (e.g. it is 'my-repo'), 
+  // then base should be '/my-repo/'
   base: '/', 
+  build: {
+    outDir: 'dist',
+  }
 });
