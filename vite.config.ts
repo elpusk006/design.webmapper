@@ -7,7 +7,7 @@ export default defineConfig({
   // For https://elpusk006.github.io, base is '/'
   // If the repository name is NOT elpusk006.github.io (e.g. it is 'my-repo'), 
   // then base should be '/my-repo/'
-  base: '/', 
+  base: '/design.webmapper/', 
   build: {
     outDir: 'dist',
   }
