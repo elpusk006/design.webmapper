@@ -105,12 +105,50 @@ export const createHandlers = (
       // i-Button Specific
       onIButtonModeChange: (val: string) => updateSetting('ibuttonMode', val, 'i-Button Mode'),
       onIButtonRangeStartChange: (val: number) => {
-        const clamped = clamp(val, 0, 15);
-        updateSetting('ibuttonRangeStart', clamped, 'i-Button Range Start');
+        const clampedStart = clamp(val, 0, 15);
+        
+        setState(prev => {
+          const currentEnd = prev.config.ibuttonRangeEnd;
+          const newEnd = Math.max(clampedStart, currentEnd);
+          
+          const logs = [...prev.logs, `Update: i-Button Range Start set to ${clampedStart}`];
+          if (newEnd !== currentEnd) {
+            logs.push(`Update: i-Button Range End adjusted to ${newEnd} to maintain valid range`);
+          }
+
+          return {
+            ...prev,
+            config: {
+              ...prev.config,
+              ibuttonRangeStart: clampedStart,
+              ibuttonRangeEnd: newEnd
+            },
+            logs
+          };
+        });
       },
       onIButtonRangeEndChange: (val: number) => {
-        const clamped = clamp(val, 0, 15);
-        updateSetting('ibuttonRangeEnd', clamped, 'i-Button Range End');
+        const clampedEnd = clamp(val, 0, 15);
+        
+        setState(prev => {
+          const currentStart = prev.config.ibuttonRangeStart;
+          const newStart = Math.min(clampedEnd, currentStart);
+          
+          const logs = [...prev.logs, `Update: i-Button Range End set to ${clampedEnd}`];
+          if (newStart !== currentStart) {
+            logs.push(`Update: i-Button Range Start adjusted to ${newStart} to maintain valid range`);
+          }
+
+          return {
+            ...prev,
+            config: {
+              ...prev.config,
+              ibuttonRangeStart: newStart,
+              ibuttonRangeEnd: clampedEnd
+            },
+            logs
+          };
+        });
       },
 
       // MSR Specific
