@@ -75,6 +75,13 @@ export const createHandlers = (
       addLog('Apply Success: Configuration updated.');
     },
 
+    onClearLogs: () => {
+      setState(prev => ({
+        ...prev,
+        logs: []
+      }));
+    },
+
     /**
      * CONFIGURATION HANDLERS (Split by Element/Setting)
      */

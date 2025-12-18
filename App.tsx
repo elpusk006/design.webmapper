@@ -53,6 +53,7 @@ const App: React.FC = () => {
           onConnect={handlers.onConnect}
           onDisconnect={handlers.onDisconnect}
           logs={state.logs}
+          onClearLogs={handlers.onClearLogs}
           setDeviceType={(type) => setState(prev => ({ ...prev, deviceType: type }))}
           onApply={handlers.onApply}
           onLoadSettings={handlers.onLoadSettings}

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ConnectionStatus, DeviceType } from '../types';
-import { Upload, RefreshCw, Power, Save, Download } from 'lucide-react';
+import { Upload, RefreshCw, Power, Save, Download, Trash2 } from 'lucide-react';
 
 interface DeviceTabProps {
   status: ConnectionStatus;
@@ -8,6 +8,7 @@ interface DeviceTabProps {
   onConnect: (type: DeviceType) => void;
   onDisconnect: () => void;
   logs: string[];
+  onClearLogs: () => void;
   setDeviceType: (type: DeviceType) => void;
   onApply: () => void;
   onLoadSettings: (fileName: string) => void;
@@ -21,6 +22,7 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
   onConnect, 
   onDisconnect, 
   logs,
+  onClearLogs,
   setDeviceType,
   onApply,
   onLoadSettings,
@@ -157,8 +159,15 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
 
         <div className="flex flex-col h-full">
           <div className="bg-white border border-gray-300 rounded-lg shadow-inner flex-1 flex flex-col overflow-hidden">
-            <div className="bg-gray-100 border-b border-gray-200 px-4 py-2 text-xs font-semibold text-gray-500 uppercase">
-              Device Log & Information
+            <div className="bg-gray-100 border-b border-gray-200 px-4 py-2 text-xs font-semibold text-gray-500 uppercase flex justify-between items-center">
+              <span>Device Log & Information</span>
+              <button 
+                onClick={onClearLogs}
+                className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-red-500 transition-colors"
+                title="Clear logs"
+              >
+                <Trash2 size={10} /> CLEAR
+              </button>
             </div>
             <div className="p-4 overflow-y-auto flex-1 font-mono text-xs space-y-1">
               {logs.length === 0 && <p className="text-gray-400 italic">No activity yet...</p>}
