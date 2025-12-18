@@ -10,6 +10,9 @@ interface DeviceTabProps {
   logs: string[];
   setDeviceType: (type: DeviceType) => void;
   onApply: () => void;
+  onLoadSettings: (fileName: string) => void;
+  onLoadFirmware: (fileName: string) => void;
+  onDownloadSettings: () => void;
 }
 
 const DeviceTab: React.FC<DeviceTabProps> = ({ 
@@ -19,7 +22,10 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
   onDisconnect, 
   logs,
   setDeviceType,
-  onApply
+  onApply,
+  onLoadSettings,
+  onLoadFirmware,
+  onDownloadSettings
 }) => {
   const isConnected = status === ConnectionStatus.CONNECTED;
   const [configFileName, setConfigFileName] = useState<string>('No setting file loaded...');
@@ -28,27 +34,25 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
   const configFileInputRef = useRef<HTMLInputElement>(null);
   const firmwareFileInputRef = useRef<HTMLInputElement>(null);
 
+  /**
+   * INTERFACE ACTIONS
+   * These methods bridge the DOM events to the centralized handlers.
+   */
+
   const handleConfigFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setConfigFileName(e.target.files[0].name);
+      const name = e.target.files[0].name;
+      setConfigFileName(name);
+      onLoadSettings(name);
     }
   };
 
   const handleFirmwareFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFirmwareFileName(e.target.files[0].name);
+      const name = e.target.files[0].name;
+      setFirmwareFileName(name);
+      onLoadFirmware(name);
     }
-  };
-
-  const handleDownload = () => {
-    const data = { deviceType, timestamp: new Date().toISOString() };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'elpusk_settings.json';
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -127,7 +131,7 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
                 </div>
              </div>
              <button 
-               onClick={handleDownload}
+               onClick={onDownloadSettings}
                className="flex items-center gap-1 mt-2 text-blue-600 text-sm font-medium hover:underline"
              >
                <Download size={14} /> Download current settings

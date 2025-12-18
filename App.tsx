@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { ConnectionStatus, DeviceType, AppState, KeyMapEntry, DEFAULT_CONFIG, DeviceConfig } from './types';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ConnectionStatus, DeviceType, AppState, KeyMapEntry, DEFAULT_CONFIG } from './types';
+import { createHandlers } from './handlers';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
@@ -24,13 +25,7 @@ const App: React.FC = () => {
 
   const [keyMaps, setKeyMaps] = useState<Record<string, KeyMapEntry[]>>({});
 
-  // Call the initialization function on startup
-  useEffect(() => {
-    if (typeof (window as any).cf2_initialize === 'function') {
-      (window as any).cf2_initialize();
-    }
-  }, []);
-
+  // Helper to add logs to state
   const addLog = (message: string) => {
     setState(prev => ({
       ...prev,
@@ -38,40 +33,15 @@ const App: React.FC = () => {
     }));
   };
 
-  const handleConnect = (type: DeviceType) => {
-    const fakePath = `\\\\?\\HID#VID_04D9&PID_1400&MI_00#7&${Math.random().toString(16).slice(2, 10)}&0&0000`;
-    setState((prev) => ({
-      ...prev,
-      status: ConnectionStatus.CONNECTED,
-      devicePath: fakePath,
-      deviceType: type,
-      logs: [...prev.logs, `Searching for HID devices...`, `Device found: ${type}`, `Connected to ${fakePath}`],
-    }));
-  };
+  // Initialize the central handlers
+  const handlers = useMemo(() => createHandlers(state, setState, addLog), [state]);
 
-  const handleDisconnect = () => {
-    setState((prev) => ({
-      ...prev,
-      status: ConnectionStatus.DISCONNECTED,
-      devicePath: '',
-      activeTab: 'device',
-      logs: [...prev.logs, 'User requested disconnect.', 'Device disconnected safely.'],
-    }));
-  };
-
-  const updateConfig = (updates: Partial<DeviceConfig>) => {
-    setState(prev => {
-      // Find what changed for logging
-      const changedKey = Object.keys(updates)[0];
-      const newValue = Object.values(updates)[0];
-      
-      return {
-        ...prev,
-        config: { ...prev.config, ...updates },
-        logs: [...prev.logs, `Setting changed: ${changedKey} -> ${newValue}`]
-      };
-    });
-  };
+  // Call the initialization function on startup
+  useEffect(() => {
+    if (typeof (window as any).cf2_initialize === 'function') {
+      (window as any).cf2_initialize();
+    }
+  }, []);
 
   const handleKeyMapChange = (tabId: string, newKeys: KeyMapEntry[]) => {
     setKeyMaps(prev => ({
@@ -87,11 +57,14 @@ const App: React.FC = () => {
         <DeviceTab 
           status={state.status}
           deviceType={state.deviceType}
-          onConnect={handleConnect}
-          onDisconnect={handleDisconnect}
+          onConnect={handlers.onConnect}
+          onDisconnect={handlers.onDisconnect}
           logs={state.logs}
           setDeviceType={(type) => setState(prev => ({ ...prev, deviceType: type }))}
-          onApply={() => addLog("Settings applied to device successfully.")}
+          onApply={handlers.onApply}
+          onLoadSettings={handlers.onLoadSettings}
+          onLoadFirmware={handlers.onLoadFirmware}
+          onDownloadSettings={handlers.onDownloadSettings}
         />
       );
     }
@@ -108,7 +81,13 @@ const App: React.FC = () => {
     }
 
     if (state.activeTab === 'common') {
-      return <CommonTab deviceType={state.deviceType} config={state.config} onConfigChange={updateConfig} />;
+      return (
+        <CommonTab 
+          deviceType={state.deviceType} 
+          config={state.config} 
+          onConfigChange={handlers.updateConfig} 
+        />
+      );
     }
 
     const isKeyMapTab = state.activeTab.includes('prefix') || 
