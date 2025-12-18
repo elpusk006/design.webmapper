@@ -5,6 +5,11 @@ interface VirtualKeyboardProps {
   onKeyPress: (key: string, modifiers: { shift: boolean, ctrl: boolean, alt: boolean }) => void;
 }
 
+const SHIFT_MAP: Record<string, string> = {
+  '1': '!', '2': '@', '3': '#', '4': '$', '5': '%', '6': '^', '7': '&', '8': '*', '9': '(', '0': ')',
+  '-': '_', '=': '+', '`': '~', '[': '{', ']': '}', '\\': '|', ';': ':', "'": '"', ',': '<', '.': '>', '/': '?'
+};
+
 const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
   const [modifiers, setModifiers] = useState({
     shift: false,
@@ -41,6 +46,23 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
     if (modifiers.shift) setModifiers(prev => ({ ...prev, shift: false }));
   };
 
+  const getDisplayLabel = (key: string) => {
+    // If it's a special multi-char key (Esc, F1, Bksp, etc), return as is
+    if (key.length > 1 && !['Shift', 'Ctrl', 'Alt'].includes(key)) return key;
+    
+    // Handle letters
+    if (key.length === 1 && key.match(/[A-Z]/)) {
+      return modifiers.shift ? key.toUpperCase() : key.toLowerCase();
+    }
+
+    // Handle symbols and numbers
+    if (modifiers.shift && SHIFT_MAP[key]) {
+      return SHIFT_MAP[key];
+    }
+
+    return key;
+  };
+
   return (
     <div className="flex-1 bg-slate-200 rounded p-4 shadow-inner flex flex-col justify-center gap-1 select-none">
       {KEYBOARD_LAYOUT.map((row, rowIndex) => (
@@ -63,6 +85,8 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
                  if(rowIndex === 0) widthClass = "w-8 text-[10px] h-8"; // Smaller F-keys
             }
 
+            const label = getDisplayLabel(key);
+
             return (
               <button
                 key={`${rowIndex}-${keyIndex}`}
@@ -73,7 +97,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
                   hover:bg-gray-50
                 `}
               >
-                {key}
+                {label}
               </button>
             );
           })}
