@@ -82,7 +82,8 @@ const App: React.FC = () => {
         <CommonTab 
           deviceType={state.deviceType} 
           config={state.config} 
-          handlers={handlers.config} 
+          handlers={handlers.config}
+          onApply={handlers.onApply}
         />
       );
     }
@@ -101,6 +102,7 @@ const App: React.FC = () => {
           maxKeys={maxKeys} 
           keys={currentKeys}
           onKeysChange={(keys) => handleKeyMapChange(state.activeTab, keys)}
+          onApply={handlers.onApply}
         />
       );
     }

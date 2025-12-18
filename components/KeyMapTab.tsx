@@ -1,22 +1,22 @@
 import React from 'react';
 import { KeyMapEntry } from '../types';
 import VirtualKeyboard from './VirtualKeyboard';
-import { Trash2, Keyboard } from 'lucide-react';
+import { Trash2, Keyboard, Save } from 'lucide-react';
 
 interface KeyMapTabProps {
   title: string;
   maxKeys: number;
   keys: KeyMapEntry[];
   onKeysChange: (keys: KeyMapEntry[]) => void;
+  onApply: () => void;
 }
 
-const KeyMapTab: React.FC<KeyMapTabProps> = ({ title, maxKeys, keys, onKeysChange }) => {
+const KeyMapTab: React.FC<KeyMapTabProps> = ({ title, maxKeys, keys, onKeysChange, onApply }) => {
   
   const handleClearAll = () => {
     // Only clear if there are keys to clear
     if (keys.length > 0) {
       // Direct update without confirmation to ensure functionality in all environments
-      // TODO + _ +
       onKeysChange([]);
     }
   };
@@ -34,12 +34,10 @@ const KeyMapTab: React.FC<KeyMapTabProps> = ({ title, maxKeys, keys, onKeysChang
       alt: modifiers.alt,
       keyValue: `[${key}] key`
     };
-    // TODO + _ +
     onKeysChange([...keys, newEntry]);
   };
 
   const handleRemoveKey = (id: number) => {
-    // TODO + _ +
     onKeysChange(keys.filter(k => k.id !== id));
   };
 
@@ -49,10 +47,18 @@ const KeyMapTab: React.FC<KeyMapTabProps> = ({ title, maxKeys, keys, onKeysChang
   return (
     <div className="flex flex-col h-full">
       <div className="bg-gray-100 border-b border-gray-300 px-6 py-3 flex justify-between items-center">
-        <h2 className="text-lg font-bold text-gray-700 flex items-center gap-2">
-          <Keyboard size={20} className="text-gray-500" />
-          {displayTitle}
-        </h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-lg font-bold text-gray-700 flex items-center gap-2">
+            <Keyboard size={20} className="text-gray-500" />
+            {displayTitle}
+          </h2>
+          <button 
+            onClick={onApply}
+            className="px-3 py-1 bg-blue-600 text-white rounded border border-blue-700 hover:bg-blue-700 font-semibold text-xs flex items-center gap-1 shadow-sm transition-colors"
+          >
+            <Save size={14} /> Apply
+          </button>
+        </div>
         <div className="text-xs font-mono bg-gray-200 px-2 py-1 rounded text-gray-600">
           Keys: {keys.length} / {maxKeys}
         </div>

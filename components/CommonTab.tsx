@@ -1,10 +1,11 @@
 import React from 'react';
 import { DeviceType, DeviceConfig } from '../types';
-import { Sliders, Volume2, Globe, Keyboard } from 'lucide-react';
+import { Sliders, Volume2, Globe, Keyboard, Save } from 'lucide-react';
 
 interface CommonTabProps {
   deviceType: DeviceType;
   config: DeviceConfig;
+  onApply: () => void;
   handlers: {
     onInterfaceChange: (val: string) => void;
     onBuzzerChange: (val: boolean) => void;
@@ -23,17 +24,23 @@ interface CommonTabProps {
   };
 }
 
-const CommonTab: React.FC<CommonTabProps> = ({ deviceType, config, handlers }) => {
+const CommonTab: React.FC<CommonTabProps> = ({ deviceType, config, handlers, onApply }) => {
   const isMSR = deviceType === DeviceType.MSR || deviceType === DeviceType.MSR_IBUTTON;
   const isIButton = deviceType === DeviceType.IBUTTON || deviceType === DeviceType.MSR_IBUTTON;
 
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-gray-100 border-b border-gray-300 px-6 py-3">
+      <div className="bg-gray-100 border-b border-gray-300 px-6 py-3 flex justify-between items-center">
         <h2 className="text-lg font-bold text-gray-700 flex items-center gap-2">
           <Sliders size={20} className="text-gray-500" />
           Common Configuration
         </h2>
+        <button 
+          onClick={onApply}
+          className="px-4 py-1.5 bg-blue-600 text-white rounded border border-blue-700 hover:bg-blue-700 font-semibold text-sm flex items-center gap-2 shadow-sm transition-colors"
+        >
+          <Save size={16} /> Apply
+        </button>
       </div>
 
       <div className="p-6 overflow-y-auto">
