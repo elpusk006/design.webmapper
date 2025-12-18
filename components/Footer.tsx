@@ -8,8 +8,9 @@ const Footer: React.FC = () => {
   const formattedDate = `${year}.${month}.${day}`;
 
   return (
-    <footer className="bg-slate-800 text-slate-400 px-6 py-2 text-xs text-right border-t border-slate-700">
-      date : {formattedDate}
+    <footer className="bg-slate-800 text-slate-400 px-6 py-2 text-xs flex justify-between items-center border-t border-slate-700">
+      <span className="opacity-60 italic">coding with Gemini</span>
+      <span>date : {formattedDate}</span>
     </footer>
   );
 };
