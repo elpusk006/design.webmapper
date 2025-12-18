@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { DeviceType } from '../types';
-import { Settings, Cpu, Keyboard, Usb } from 'lucide-react';
+import { Settings, Keyboard, Usb, CreditCard } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -28,27 +28,23 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, deviceType, i
       { id: 'ibutton-remove-key', label: 'i-button remove key', icon: Keyboard },
       { id: 'ibutton-remove-prefix', label: 'i-button remove key private prefix', icon: Keyboard },
       { id: 'ibutton-remove-suffix', label: 'i-button remove key private suffix', icon: Keyboard },
-      // TODO + _ +
     ];
 
     const msrItems = [
-      { id: 'msr-global-prefix', label: 'MSR global prefix', icon: Keyboard },
-      { id: 'msr-global-suffix', label: 'MSR global suffix', icon: Keyboard },
-      { id: 'msr-iso1-prefix', label: 'MSR iso1 private prefix', icon: Keyboard },
-      { id: 'msr-iso1-suffix', label: 'MSR iso1 private suffix', icon: Keyboard },
-      { id: 'msr-iso2-prefix', label: 'MSR iso2 private prefix', icon: Keyboard },
-      { id: 'msr-iso2-suffix', label: 'MSR iso2 private suffix', icon: Keyboard },
-      { id: 'msr-iso3-prefix', label: 'MSR iso3 private prefix', icon: Keyboard },
-      { id: 'msr-iso3-suffix', label: 'MSR iso3 private suffix', icon: Keyboard },
-      // TODO + _ +
+      { id: 'msr-global-prefix', label: 'MSR global prefix', icon: CreditCard },
+      { id: 'msr-global-suffix', label: 'MSR global suffix', icon: CreditCard },
+      { id: 'msr-iso1-prefix', label: 'MSR iso1 private prefix', icon: CreditCard },
+      { id: 'msr-iso1-suffix', label: 'MSR iso1 private suffix', icon: CreditCard },
+      { id: 'msr-iso2-prefix', label: 'MSR iso2 private prefix', icon: CreditCard },
+      { id: 'msr-iso2-suffix', label: 'MSR iso2 private suffix', icon: CreditCard },
+      { id: 'msr-iso3-prefix', label: 'MSR iso3 private prefix', icon: CreditCard },
+      { id: 'msr-iso3-suffix', label: 'MSR iso3 private suffix', icon: CreditCard },
     ];
 
     if (deviceType === DeviceType.IBUTTON) {
-      // TODO + _ +
       return [...baseItems, ...connectedItems, ...ibuttonItems];
     }
     if (deviceType === DeviceType.MSR) {
-      // TODO + _ +
       return [...baseItems, ...connectedItems, ...msrItems];
     }
     // MSR + i-Button
