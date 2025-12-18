@@ -114,7 +114,7 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType, config, handlers }) =
                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">i-Button / Code Sticks</span>
               </div>
               <div className="p-4 grid grid-cols-1 gap-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Mode</label>
                     <select 
@@ -129,26 +129,47 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType, config, handlers }) =
                         <option>user definition</option>
                     </select>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">Key Range</label>
-                    <div className="flex items-center gap-2">
-                       <input 
-                         type="number" 
-                         min="0"
-                         max="15"
-                         value={config.ibuttonRangeStart} 
-                         onChange={(e) => handlers.onIButtonRangeStartChange(parseInt(e.target.value) || 0)}
-                         className="w-20 border-gray-300 rounded text-sm p-2 bg-gray-50 border" 
-                       />
-                       <span className="text-gray-400">~</span>
-                       <input 
-                         type="number" 
-                         min="0"
-                         max="15"
-                         value={config.ibuttonRangeEnd} 
-                         onChange={(e) => handlers.onIButtonRangeEndChange(parseInt(e.target.value) || 0)}
-                         className="w-20 border-gray-300 rounded text-sm p-2 bg-gray-50 border" 
-                       />
+                  
+                  {/* Touch Friendly Range Selection */}
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <label className="text-sm font-medium text-gray-700">Key Range Start</label>
+                        <span className="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{config.ibuttonRangeStart}</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="0" 
+                        max="15" 
+                        step="1"
+                        value={config.ibuttonRangeStart} 
+                        onChange={(e) => handlers.onIButtonRangeStartChange(parseInt(e.target.value))}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <div className="flex justify-between text-[10px] text-gray-400 px-1">
+                        <span>0</span>
+                        <span>15</span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <label className="text-sm font-medium text-gray-700">Key Range End</label>
+                        <span className="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{config.ibuttonRangeEnd}</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="0" 
+                        max="15" 
+                        step="1"
+                        value={config.ibuttonRangeEnd} 
+                        onChange={(e) => handlers.onIButtonRangeEndChange(parseInt(e.target.value))}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <div className="flex justify-between text-[10px] text-gray-400 px-1">
+                        <span>0</span>
+                        <span>15</span>
+                      </div>
                     </div>
                   </div>
                 </div>
