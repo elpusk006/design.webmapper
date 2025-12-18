@@ -73,7 +73,7 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
             
             {!isConnected && (
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Simulate Device Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Connected device</label>
                 <select 
                   className="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3 border"
                   value={deviceType}
