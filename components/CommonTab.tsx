@@ -1,12 +1,14 @@
 import React from 'react';
-import { DeviceType } from '../types';
-import { Sliders, Volume2, Globe, Keyboard, CreditCard } from 'lucide-react';
+import { DeviceType, DeviceConfig } from '../types';
+import { Sliders, Volume2, Globe, Keyboard } from 'lucide-react';
 
 interface CommonTabProps {
   deviceType: DeviceType;
+  config: DeviceConfig;
+  onConfigChange: (updates: Partial<DeviceConfig>) => void;
 }
 
-const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
+const CommonTab: React.FC<CommonTabProps> = ({ deviceType, config, onConfigChange }) => {
   const isMSR = deviceType === DeviceType.MSR || deviceType === DeviceType.MSR_IBUTTON;
   const isIButton = deviceType === DeviceType.IBUTTON || deviceType === DeviceType.MSR_IBUTTON;
 
@@ -21,8 +23,6 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
 
       <div className="p-6 overflow-y-auto">
         <div className="max-w-4xl mx-auto space-y-6">
-          
-          {/* System Section */}
           <section className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
             <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">System</span>
@@ -34,9 +34,8 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                  </label>
                  <select 
                    className="w-full border-gray-300 rounded text-sm p-2 bg-gray-50 border"
-                   onChange={(e) => {
-                     // TODO + _ +
-                   }}
+                   value={config.interface}
+                   onChange={(e) => onConfigChange({ interface: e.target.value })}
                  >
                     <option>USB keyboard mode</option>
                     <option>USB HID Vendor mode</option>
@@ -48,25 +47,22 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                    <Volume2 size={14} /> Buzzer
                  </label>
                  <div className="flex items-center gap-4 mt-2">
-                   <label className="flex items-center gap-2 text-sm text-gray-600">
+                   <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
                      <input 
                        type="radio" 
                        name="buzzer" 
-                       defaultChecked 
+                       checked={config.buzzer === true}
+                       onChange={() => onConfigChange({ buzzer: true })}
                        className="text-blue-600 focus:ring-blue-500" 
-                       onChange={(e) => {
-                         // TODO + _ +
-                       }}
                      /> ON
                    </label>
-                   <label className="flex items-center gap-2 text-sm text-gray-600">
+                   <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
                      <input 
                        type="radio" 
                        name="buzzer" 
+                       checked={config.buzzer === false}
+                       onChange={() => onConfigChange({ buzzer: false })}
                        className="text-blue-600 focus:ring-blue-500" 
-                       onChange={(e) => {
-                         // TODO + _ +
-                       }}
                      /> OFF
                    </label>
                  </div>
@@ -77,9 +73,8 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                  </label>
                  <select 
                    className="w-full border-gray-300 rounded text-sm p-2 bg-gray-50 border"
-                   onChange={(e) => {
-                     // TODO + _ +
-                   }}
+                   value={config.language}
+                   onChange={(e) => onConfigChange({ language: e.target.value })}
                  >
                     <option>USA English</option>
                     <option>Spanish</option>
@@ -96,7 +91,6 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
             </div>
           </section>
 
-          {/* i-Button Section */}
           {isIButton && (
             <section className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
                <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
@@ -108,9 +102,8 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                     <label className="text-sm font-medium text-gray-700">Mode</label>
                     <select 
                       className="w-full border-gray-300 rounded text-sm p-2 bg-gray-50 border"
-                      onChange={(e) => {
-                        // TODO + _ +
-                      }}
+                      value={config.ibuttonMode}
+                      onChange={(e) => onConfigChange({ ibuttonMode: e.target.value })}
                     >
                         <option>zero-16 times</option>
                         <option>F12</option>
@@ -122,9 +115,19 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Key Range</label>
                     <div className="flex items-center gap-2">
-                       <input type="number" defaultValue={0} className="w-20 border-gray-300 rounded text-sm p-2 bg-gray-50 border" />
+                       <input 
+                         type="number" 
+                         value={config.ibuttonRangeStart} 
+                         onChange={(e) => onConfigChange({ ibuttonRangeStart: parseInt(e.target.value) || 0 })}
+                         className="w-20 border-gray-300 rounded text-sm p-2 bg-gray-50 border" 
+                       />
                        <span className="text-gray-400">~</span>
-                       <input type="number" defaultValue={15} className="w-20 border-gray-300 rounded text-sm p-2 bg-gray-50 border" />
+                       <input 
+                         type="number" 
+                         value={config.ibuttonRangeEnd} 
+                         onChange={(e) => onConfigChange({ ibuttonRangeEnd: parseInt(e.target.value) || 0 })}
+                         className="w-20 border-gray-300 rounded text-sm p-2 bg-gray-50 border" 
+                       />
                     </div>
                   </div>
                 </div>
@@ -132,7 +135,6 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
             </section>
           )}
 
-          {/* MSR Section */}
           {isMSR && (
             <section className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
               <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
@@ -143,9 +145,8 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                     <label className="text-sm font-medium text-gray-700">Direction</label>
                     <select 
                       className="w-full border-gray-300 rounded text-sm p-2 bg-gray-50 border"
-                      onChange={(e) => {
-                        // TODO + _ +
-                      }}
+                      value={config.msrDirection}
+                      onChange={(e) => onConfigChange({ msrDirection: e.target.value })}
                     >
                         <option>Bidirectional</option>
                         <option>Forward</option>
@@ -156,9 +157,8 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                     <label className="text-sm font-medium text-gray-700">Track Order</label>
                     <select 
                       className="w-full border-gray-300 rounded text-sm p-2 bg-gray-50 border"
-                      onChange={(e) => {
-                        // TODO + _ +
-                      }}
+                      value={config.msrTrackOrder}
+                      onChange={(e) => onConfigChange({ msrTrackOrder: e.target.value })}
                     >
                         <option>123</option>
                         <option>132</option>
@@ -172,9 +172,8 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                     <label className="text-sm font-medium text-gray-700">Reset Interval</label>
                     <select 
                       className="w-full border-gray-300 rounded text-sm p-2 bg-gray-50 border"
-                      onChange={(e) => {
-                        // TODO + _ +
-                      }}
+                      value={config.msrResetInterval}
+                      onChange={(e) => onConfigChange({ msrResetInterval: e.target.value })}
                     >
                         <option>0(default, 03:22)</option>
                         <option>16(06:43)</option>
@@ -197,34 +196,28 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                  <div className="space-y-1">
                    <label className="text-sm font-medium text-gray-700 block mb-2">Enable ISO</label>
                    <div className="flex flex-wrap gap-4">
-                     <label className="flex items-center gap-2 text-sm text-gray-600">
+                     <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          defaultChecked 
+                          checked={config.msrEnableISO1} 
+                          onChange={(e) => onConfigChange({ msrEnableISO1: e.target.checked })}
                           className="rounded text-blue-600 focus:ring-blue-500" 
-                          onChange={(e) => {
-                            // TODO + _ +
-                          }}
                         /> Enable ISO1
                      </label>
-                     <label className="flex items-center gap-2 text-sm text-gray-600">
+                     <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          defaultChecked 
+                          checked={config.msrEnableISO2} 
+                          onChange={(e) => onConfigChange({ msrEnableISO2: e.target.checked })}
                           className="rounded text-blue-600 focus:ring-blue-500" 
-                          onChange={(e) => {
-                            // TODO + _ +
-                          }}
                         /> Enable ISO2
                      </label>
-                     <label className="flex items-center gap-2 text-sm text-gray-600">
+                     <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          defaultChecked 
+                          checked={config.msrEnableISO3} 
+                          onChange={(e) => onConfigChange({ msrEnableISO3: e.target.checked })}
                           className="rounded text-blue-600 focus:ring-blue-500" 
-                          onChange={(e) => {
-                            // TODO + _ +
-                          }}
                         /> Enable ISO3
                      </label>
                    </div>
@@ -235,25 +228,22 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                       <div className="bg-gray-50 p-3 rounded border border-gray-200">
                           <label className="text-xs font-bold text-gray-500 uppercase block mb-2">Global pre/suffix sending condition</label>
                           <div className="space-y-2">
-                             <label className="flex items-center gap-2 text-sm text-gray-700">
+                             <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                                <input 
                                  type="radio" 
                                  name="global_send" 
-                                 defaultChecked 
+                                 checked={config.msrGlobalSendCondition === 'No Error in all tracks'}
+                                 onChange={() => onConfigChange({ msrGlobalSendCondition: 'No Error in all tracks' })}
                                  className="text-blue-600" 
-                                 onChange={(e) => {
-                                   // TODO + _ +
-                                 }}
                                /> No Error in all tracks
                              </label>
-                             <label className="flex items-center gap-2 text-sm text-gray-700">
+                             <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                                <input 
                                  type="radio" 
                                  name="global_send" 
+                                 checked={config.msrGlobalSendCondition === 'One more track is normal'}
+                                 onChange={() => onConfigChange({ msrGlobalSendCondition: 'One more track is normal' })}
                                  className="text-blue-600" 
-                                 onChange={(e) => {
-                                   // TODO + _ +
-                                 }}
                                /> One more track is normal
                              </label>
                           </div>
@@ -261,25 +251,22 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
                       <div className="bg-gray-50 p-3 rounded border border-gray-200">
                           <label className="text-xs font-bold text-gray-500 uppercase block mb-2">Success indication condition</label>
                           <div className="space-y-2">
-                             <label className="flex items-center gap-2 text-sm text-gray-700">
+                             <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                                <input 
                                  type="radio" 
                                  name="success_ind" 
-                                 defaultChecked 
+                                 checked={config.msrSuccessIndCondition === 'No Error in all tracks'}
+                                 onChange={() => onConfigChange({ msrSuccessIndCondition: 'No Error in all tracks' })}
                                  className="text-blue-600" 
-                                 onChange={(e) => {
-                                   // TODO + _ +
-                                 }}
                                /> No Error in all tracks
                              </label>
-                             <label className="flex items-center gap-2 text-sm text-gray-700">
+                             <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                                <input 
                                  type="radio" 
                                  name="success_ind" 
+                                 checked={config.msrSuccessIndCondition === 'One more track is normal'}
+                                 onChange={() => onConfigChange({ msrSuccessIndCondition: 'One more track is normal' })}
                                  className="text-blue-600" 
-                                 onChange={(e) => {
-                                   // TODO + _ +
-                                 }}
                                /> One more track is normal
                              </label>
                           </div>
@@ -289,7 +276,6 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType }) => {
               </div>
             </section>
           )}
-
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ConnectionStatus, DeviceType } from '../types';
-import { Upload, RefreshCw, Power, Save } from 'lucide-react';
+import { Upload, RefreshCw, Power, Save, Download } from 'lucide-react';
 
 interface DeviceTabProps {
   status: ConnectionStatus;
@@ -9,6 +9,7 @@ interface DeviceTabProps {
   onDisconnect: () => void;
   logs: string[];
   setDeviceType: (type: DeviceType) => void;
+  onApply: () => void;
 }
 
 const DeviceTab: React.FC<DeviceTabProps> = ({ 
@@ -17,39 +18,37 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
   onConnect, 
   onDisconnect, 
   logs,
-  setDeviceType 
+  setDeviceType,
+  onApply
 }) => {
   const isConnected = status === ConnectionStatus.CONNECTED;
-
-  // File selection state
   const [configFileName, setConfigFileName] = useState<string>('No setting file loaded...');
   const [firmwareFileName, setFirmwareFileName] = useState<string>('Select firmware (.rom)...');
 
-  // Refs for hidden file inputs
   const configFileInputRef = useRef<HTMLInputElement>(null);
   const firmwareFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Handlers
-  const handleConfigLoadClick = () => {
-    configFileInputRef.current?.click();
-  };
-
   const handleConfigFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      // TODO + _ +
       setConfigFileName(e.target.files[0].name);
     }
   };
 
-  const handleFirmwareLoadClick = () => {
-    firmwareFileInputRef.current?.click();
-  };
-
   const handleFirmwareFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      // TODO + _ +
       setFirmwareFileName(e.target.files[0].name);
     }
+  };
+
+  const handleDownload = () => {
+    const data = { deviceType, timestamp: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'elpusk_settings.json';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -62,10 +61,7 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
       </div>
 
       <div className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-        {/* Left Column: Controls */}
         <div className="space-y-6">
-          
-          {/* Connection Section */}
           <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm space-y-4">
             <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">Connection Settings</h3>
             
@@ -75,10 +71,7 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
                 <select 
                   className="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3 border"
                   value={deviceType}
-                  onChange={(e) => {
-                    // TODO + _ +
-                    setDeviceType(e.target.value as DeviceType);
-                  }}
+                  onChange={(e) => setDeviceType(e.target.value as DeviceType)}
                 >
                   <option value={DeviceType.IBUTTON}>i-Button Only</option>
                   <option value={DeviceType.MSR}>MSR Only</option>
@@ -90,7 +83,7 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
             <div className="flex items-center gap-2 bg-gray-50 p-3 rounded border border-gray-200">
               <input 
                 type="text" 
-                value={isConnected ? "\\\\?\\HID#VID_04D9&PID_1400" : ""} 
+                value={isConnected ? "HID\\VID_04D9&PID_1400" : ""} 
                 placeholder="Device Path (auto-detected)"
                 disabled 
                 className="flex-1 bg-transparent text-sm text-gray-600 outline-none"
@@ -110,28 +103,21 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
               </button>
               {isConnected && (
                 <button 
-                  onClick={() => { /* TODO + _ + */ }}
-                  className="px-4 py-2 bg-gray-100 text-gray-600 rounded border border-gray-200 hover:bg-gray-200 font-medium text-sm"
+                  onClick={onApply}
+                  className="px-6 py-2 bg-blue-50 text-blue-700 rounded border border-blue-200 hover:bg-blue-100 font-semibold text-sm flex items-center gap-2"
                 >
-                  Apply
+                  <Save size={16} /> Apply Settings
                 </button>
               )}
             </div>
           </div>
 
-          {/* Setting File */}
           <div className={`bg-white p-5 rounded-lg border border-gray-200 shadow-sm space-y-3 ${!isConnected ? 'opacity-60 pointer-events-none' : ''}`}>
              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">Configuration File</h3>
              <div className="flex gap-2">
-                <input 
-                  type="file" 
-                  ref={configFileInputRef} 
-                  className="hidden" 
-                  accept=".xml,.txt" 
-                  onChange={handleConfigFileChange}
-                />
+                <input type="file" ref={configFileInputRef} className="hidden" accept=".json,.xml,.txt" onChange={handleConfigFileChange} />
                 <button 
-                  onClick={handleConfigLoadClick}
+                  onClick={() => configFileInputRef.current?.click()}
                   className="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors"
                 >
                   <Upload size={16} /> Load File
@@ -141,26 +127,19 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
                 </div>
              </div>
              <button 
-               onClick={() => { /* TODO + _ + */ }}
-               className="w-full mt-2 py-2 text-blue-600 text-sm font-medium hover:underline text-left"
+               onClick={handleDownload}
+               className="flex items-center gap-1 mt-2 text-blue-600 text-sm font-medium hover:underline"
              >
-               Download current settings
+               <Download size={14} /> Download current settings
              </button>
           </div>
 
-          {/* Firmware Update */}
           <div className={`bg-white p-5 rounded-lg border border-gray-200 shadow-sm space-y-3 ${!isConnected ? 'opacity-60 pointer-events-none' : ''}`}>
              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">Firmware Update</h3>
              <div className="flex gap-2">
-                <input 
-                  type="file" 
-                  ref={firmwareFileInputRef} 
-                  className="hidden" 
-                  accept=".rom,.bin" 
-                  onChange={handleFirmwareFileChange}
-                />
+                <input type="file" ref={firmwareFileInputRef} className="hidden" accept=".rom,.bin" onChange={handleFirmwareFileChange} />
                 <button 
-                  onClick={handleFirmwareLoadClick}
+                  onClick={() => firmwareFileInputRef.current?.click()}
                   className="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors"
                 >
                   <RefreshCw size={16} /> ROM File
@@ -172,28 +151,27 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
           </div>
         </div>
 
-        {/* Right Column: Information/Logs */}
         <div className="flex flex-col h-full">
           <div className="bg-white border border-gray-300 rounded-lg shadow-inner flex-1 flex flex-col overflow-hidden">
             <div className="bg-gray-100 border-b border-gray-200 px-4 py-2 text-xs font-semibold text-gray-500 uppercase">
               Device Log & Information
             </div>
-            <div className="p-4 overflow-y-auto flex-1 font-mono text-sm space-y-1">
+            <div className="p-4 overflow-y-auto flex-1 font-mono text-xs space-y-1">
               {logs.length === 0 && <p className="text-gray-400 italic">No activity yet...</p>}
-              {logs.map((log, index) => (
+              {[...logs].reverse().map((log, index) => (
                 <div key={index} className="flex gap-2">
-                   <span className="text-gray-400 select-none">[{new Date().toLocaleTimeString()}]</span>
+                   <span className="text-gray-400 shrink-0">[{new Date().toLocaleTimeString()}]</span>
                    <span className="text-gray-700">{log}</span>
                 </div>
               ))}
             </div>
             {isConnected && (
               <div className="p-4 border-t border-gray-100 bg-gray-50">
-                <div className="text-xs text-gray-500 grid grid-cols-2 gap-2">
-                    <p><strong>Model:</strong> LPU237-Dual</p>
-                    <p><strong>Firmware:</strong> v2.0.1</p>
-                    <p><strong>S/N:</strong> 20251217-001</p>
-                    <p><strong>Mode:</strong> HID Keyboard</p>
+                <div className="text-[10px] text-gray-500 grid grid-cols-2 gap-x-4 gap-y-1">
+                    <p><strong>Model:</strong> LPU237-Dual-Web</p>
+                    <p><strong>Firmware:</strong> v2.1.0-RC</p>
+                    <p><strong>S/N:</strong> ELP-2025-X99</p>
+                    <p><strong>Interface:</strong> HID KB</p>
                 </div>
               </div>
             )}

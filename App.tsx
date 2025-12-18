@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ConnectionStatus, DeviceType, AppState, KeyMapEntry } from './types';
+import React, { useState, useEffect } from 'react';
+import { ConnectionStatus, DeviceType, AppState, KeyMapEntry, DEFAULT_CONFIG, DeviceConfig } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
@@ -7,38 +7,70 @@ import DeviceTab from './components/DeviceTab';
 import CommonTab from './components/CommonTab';
 import KeyMapTab from './components/KeyMapTab';
 
+// Define the global initialization function with an empty body as requested
+(window as any).cf2_initialize = () => {
+  // Empty body for user implementation
+};
+
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>({
     status: ConnectionStatus.DISCONNECTED,
     devicePath: '',
-    deviceType: DeviceType.MSR_IBUTTON, // Simulation type
+    deviceType: DeviceType.MSR_IBUTTON,
     activeTab: 'device',
     logs: ['Welcome to Web Tools 1.0'],
+    config: { ...DEFAULT_CONFIG },
   });
 
-  // Store key configurations for each tab independently
   const [keyMaps, setKeyMaps] = useState<Record<string, KeyMapEntry[]>>({});
 
+  // Call the initialization function on startup
+  useEffect(() => {
+    if (typeof (window as any).cf2_initialize === 'function') {
+      (window as any).cf2_initialize();
+    }
+  }, []);
+
+  const addLog = (message: string) => {
+    setState(prev => ({
+      ...prev,
+      logs: [...prev.logs, message]
+    }));
+  };
+
   const handleConnect = (type: DeviceType) => {
-    // TODO + _ +
+    const fakePath = `\\\\?\\HID#VID_04D9&PID_1400&MI_00#7&${Math.random().toString(16).slice(2, 10)}&0&0000`;
     setState((prev) => ({
       ...prev,
       status: ConnectionStatus.CONNECTED,
-      devicePath: '\\\\?\\HID#VID_XXXX&PID_XXXX',
+      devicePath: fakePath,
       deviceType: type,
-      logs: [...prev.logs, `Connected to ${type} device.`, 'Reading configuration...'],
+      logs: [...prev.logs, `Searching for HID devices...`, `Device found: ${type}`, `Connected to ${fakePath}`],
     }));
   };
 
   const handleDisconnect = () => {
-    // TODO + _ +
     setState((prev) => ({
       ...prev,
       status: ConnectionStatus.DISCONNECTED,
       devicePath: '',
-      activeTab: 'device', // Reset to default tab on disconnect
-      logs: [...prev.logs, 'Device disconnected.'],
+      activeTab: 'device',
+      logs: [...prev.logs, 'User requested disconnect.', 'Device disconnected safely.'],
     }));
+  };
+
+  const updateConfig = (updates: Partial<DeviceConfig>) => {
+    setState(prev => {
+      // Find what changed for logging
+      const changedKey = Object.keys(updates)[0];
+      const newValue = Object.values(updates)[0];
+      
+      return {
+        ...prev,
+        config: { ...prev.config, ...updates },
+        logs: [...prev.logs, `Setting changed: ${changedKey} -> ${newValue}`]
+      };
+    });
   };
 
   const handleKeyMapChange = (tabId: string, newKeys: KeyMapEntry[]) => {
@@ -46,10 +78,10 @@ const App: React.FC = () => {
       ...prev,
       [tabId]: newKeys
     }));
+    addLog(`Key map updated for ${tabId.replace(/-/g, ' ')} (${newKeys.length} keys)`);
   };
 
   const renderContent = () => {
-    // If disconnected, only show Device tab (or a welcome screen, but design implies Device tab is always start)
     if (state.activeTab === 'device') {
       return (
         <DeviceTab 
@@ -59,6 +91,7 @@ const App: React.FC = () => {
           onDisconnect={handleDisconnect}
           logs={state.logs}
           setDeviceType={(type) => setState(prev => ({ ...prev, deviceType: type }))}
+          onApply={() => addLog("Settings applied to device successfully.")}
         />
       );
     }
@@ -66,27 +99,23 @@ const App: React.FC = () => {
     if (state.status === ConnectionStatus.DISCONNECTED) {
       return (
         <div className="flex items-center justify-center h-full text-gray-400">
-          <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
-            <h3 className="text-lg font-medium">Device Not Connected</h3>
-            <p className="text-sm">Please connect a device in the Device tab first.</p>
+          <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg max-w-sm">
+            <h3 className="text-lg font-medium text-gray-600 mb-2">Device Not Connected</h3>
+            <p className="text-sm">Please go to the <strong>Device</strong> tab and connect your reader to start configuration.</p>
           </div>
         </div>
       );
     }
 
     if (state.activeTab === 'common') {
-      return <CommonTab deviceType={state.deviceType} />;
+      return <CommonTab deviceType={state.deviceType} config={state.config} onConfigChange={updateConfig} />;
     }
 
-    // Key Map Tabs (Dynamic based on sidebar selection)
-    // Check if the active tab is one of the key map configuration tabs
-    // TODO + _ +
     const isKeyMapTab = state.activeTab.includes('prefix') || 
                         state.activeTab.includes('suffix') || 
                         state.activeTab === 'ibutton-remove-key';
 
     if (isKeyMapTab) {
-      // "i-button remove key" allows 20 keys, others allow 7.
       const maxKeys = state.activeTab === 'ibutton-remove-key' ? 20 : 7;
       const currentKeys = keyMaps[state.activeTab] || [];
 
@@ -100,7 +129,7 @@ const App: React.FC = () => {
       );
     }
 
-    return <div className="p-4">Select a tab from the sidebar.</div>;
+    return <div className="p-4">Select a tab from the sidebar to begin.</div>;
   };
 
   return (

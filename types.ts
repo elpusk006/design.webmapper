@@ -17,12 +17,30 @@ export interface KeyMapEntry {
   keyValue: string;
 }
 
+export interface DeviceConfig {
+  interface: string;
+  buzzer: boolean;
+  language: string;
+  ibuttonMode: string;
+  ibuttonRangeStart: number;
+  ibuttonRangeEnd: number;
+  msrDirection: string;
+  msrTrackOrder: string;
+  msrResetInterval: string;
+  msrEnableISO1: boolean;
+  msrEnableISO2: boolean;
+  msrEnableISO3: boolean;
+  msrGlobalSendCondition: string;
+  msrSuccessIndCondition: string;
+}
+
 export interface AppState {
   status: ConnectionStatus;
   devicePath: string;
   deviceType: DeviceType;
   activeTab: string;
   logs: string[];
+  config: DeviceConfig;
 }
 
 export const KEYBOARD_LAYOUT = [
@@ -33,3 +51,20 @@ export const KEYBOARD_LAYOUT = [
   ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 'Shift'],
   ['Ctrl', 'Alt', 'Space', 'Alt', 'Ctrl']
 ];
+
+export const DEFAULT_CONFIG: DeviceConfig = {
+  interface: 'USB keyboard mode',
+  buzzer: true,
+  language: 'USA English',
+  ibuttonMode: 'zero-16 times',
+  ibuttonRangeStart: 0,
+  ibuttonRangeEnd: 15,
+  msrDirection: 'Bidirectional',
+  msrTrackOrder: '123',
+  msrResetInterval: '0(default, 03:22)',
+  msrEnableISO1: true,
+  msrEnableISO2: true,
+  msrEnableISO3: true,
+  msrGlobalSendCondition: 'No Error in all tracks',
+  msrSuccessIndCondition: 'No Error in all tracks',
+};
