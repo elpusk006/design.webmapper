@@ -112,7 +112,7 @@ const DeviceTab: React.FC<DeviceTabProps> = ({
                   onClick={onApply}
                   className="px-6 py-2 bg-blue-50 text-blue-700 rounded border border-blue-200 hover:bg-blue-100 font-semibold text-sm flex items-center gap-2"
                 >
-                  <Save size={16} /> Apply Settings
+                  <Save size={16} /> Apply
                 </button>
               )}
             </div>
