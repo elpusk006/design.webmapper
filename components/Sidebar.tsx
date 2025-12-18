@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { DeviceType } from '../types';
-import { Settings, Keyboard, Usb, CreditCard } from 'lucide-react';
+import { Settings, Keyboard, Usb, CreditCard, Key } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -23,11 +23,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, deviceType, i
     ];
 
     const ibuttonItems = [
-      { id: 'ibutton-key-prefix', label: 'i-button key private prefix', icon: Keyboard },
-      { id: 'ibutton-key-suffix', label: 'i-button key private suffix', icon: Keyboard },
-      { id: 'ibutton-remove-key', label: 'i-button remove key', icon: Keyboard },
-      { id: 'ibutton-remove-prefix', label: 'i-button remove key private prefix', icon: Keyboard },
-      { id: 'ibutton-remove-suffix', label: 'i-button remove key private suffix', icon: Keyboard },
+      { id: 'ibutton-key-prefix', label: 'i-button key private prefix', icon: Key },
+      { id: 'ibutton-key-suffix', label: 'i-button key private suffix', icon: Key },
+      { id: 'ibutton-remove-key', label: 'i-button remove key', icon: Key },
+      { id: 'ibutton-remove-prefix', label: 'i-button remove key private prefix', icon: Key },
+      { id: 'ibutton-remove-suffix', label: 'i-button remove key private suffix', icon: Key },
     ];
 
     const msrItems = [
