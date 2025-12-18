@@ -28,6 +28,11 @@ export const createHandlers = (
     }));
   };
 
+  /**
+   * Clamps a number between min and max inclusive.
+   */
+  const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
+
   return {
     /**
      * INITIALIZATION & SYSTEM
@@ -81,8 +86,14 @@ export const createHandlers = (
 
       // i-Button Specific
       onIButtonModeChange: (val: string) => updateSetting('ibuttonMode', val, 'i-Button Mode'),
-      onIButtonRangeStartChange: (val: number) => updateSetting('ibuttonRangeStart', val, 'i-Button Range Start'),
-      onIButtonRangeEndChange: (val: number) => updateSetting('ibuttonRangeEnd', val, 'i-Button Range End'),
+      onIButtonRangeStartChange: (val: number) => {
+        const clamped = clamp(val, 0, 15);
+        updateSetting('ibuttonRangeStart', clamped, 'i-Button Range Start');
+      },
+      onIButtonRangeEndChange: (val: number) => {
+        const clamped = clamp(val, 0, 15);
+        updateSetting('ibuttonRangeEnd', clamped, 'i-Button Range End');
+      },
 
       // MSR Specific
       onMsrDirectionChange: (val: string) => updateSetting('msrDirection', val, 'MSR Direction'),

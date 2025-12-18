@@ -134,6 +134,8 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType, config, handlers }) =
                     <div className="flex items-center gap-2">
                        <input 
                          type="number" 
+                         min="0"
+                         max="15"
                          value={config.ibuttonRangeStart} 
                          onChange={(e) => handlers.onIButtonRangeStartChange(parseInt(e.target.value) || 0)}
                          className="w-20 border-gray-300 rounded text-sm p-2 bg-gray-50 border" 
@@ -141,6 +143,8 @@ const CommonTab: React.FC<CommonTabProps> = ({ deviceType, config, handlers }) =
                        <span className="text-gray-400">~</span>
                        <input 
                          type="number" 
+                         min="0"
+                         max="15"
                          value={config.ibuttonRangeEnd} 
                          onChange={(e) => handlers.onIButtonRangeEndChange(parseInt(e.target.value) || 0)}
                          className="w-20 border-gray-300 rounded text-sm p-2 bg-gray-50 border" 
