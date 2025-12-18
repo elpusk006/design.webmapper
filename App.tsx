@@ -31,9 +31,12 @@ const App: React.FC = () => {
   // Initialize the central handlers
   const handlers = useMemo(() => createHandlers(state, setState, addLog), [state]);
 
-  // Call the initialization function on startup
+  // Call the initialization function on startup and cleanup on termination
   useEffect(() => {
     handlers.initializeSystem();
+    return () => {
+      handlers.uninitializeSystem();
+    };
   }, []);
 
   const handleKeyMapChange = (tabId: string, newKeys: KeyMapEntry[]) => {

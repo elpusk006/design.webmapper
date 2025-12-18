@@ -8,6 +8,10 @@ import { AppState, ConnectionStatus, DeviceType, DeviceConfig } from './types';
   // Empty body for user implementation
 };
 
+(window as any).cf2_uninitialize = () => {
+  // Empty body for user implementation
+};
+
 /**
  * UI EVENT HANDLERS & LOGIC CONTROLLER
  * This function orchestrates the business logic for the configuration tool.
@@ -42,6 +46,13 @@ export const createHandlers = (
         (window as any).cf2_initialize();
       }
       addLog('System components initialized.');
+    },
+
+    uninitializeSystem: () => {
+      if (typeof (window as any).cf2_uninitialize === 'function') {
+        (window as any).cf2_uninitialize();
+      }
+      // Note: logging to state here might be ignored if the app is unmounting/terminating
     },
 
     /**
