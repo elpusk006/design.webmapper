@@ -8,11 +8,6 @@ import DeviceTab from './components/DeviceTab';
 import CommonTab from './components/CommonTab';
 import KeyMapTab from './components/KeyMapTab';
 
-// Define the global initialization function with an empty body as requested
-(window as any).cf2_initialize = () => {
-  // Empty body for user implementation
-};
-
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>({
     status: ConnectionStatus.DISCONNECTED,
@@ -38,9 +33,7 @@ const App: React.FC = () => {
 
   // Call the initialization function on startup
   useEffect(() => {
-    if (typeof (window as any).cf2_initialize === 'function') {
-      (window as any).cf2_initialize();
-    }
+    handlers.initializeSystem();
   }, []);
 
   const handleKeyMapChange = (tabId: string, newKeys: KeyMapEntry[]) => {
@@ -85,7 +78,7 @@ const App: React.FC = () => {
         <CommonTab 
           deviceType={state.deviceType} 
           config={state.config} 
-          onConfigChange={handlers.updateConfig} 
+          handlers={handlers.config} 
         />
       );
     }
